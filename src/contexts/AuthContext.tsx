@@ -8,6 +8,7 @@ import { removeUserStoraged } from "@storage/removeUserStoraged";
 import { storageAuthToken } from "@storage/storageAuthToken";
 import { storageUserSave } from "@storage/storageUserSave";
 import { ReactNode, createContext, useEffect, useState } from "react";
+import { tagUserEmailCreate, tagUserEmailRemove } from "src/notifications/notifications-tags";
 
 type AuthContextDataProps = {
   user: userDTO
@@ -26,6 +27,7 @@ export function AuthContextProvider({children}:{children: ReactNode}){
   async function storageUserAndToken(userData: userDTO, token:string){
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       setUser(userData)
+      tagUserEmailCreate(userData.email, userData.name)
   }
 
   async function signIn(email:string, password:string){
@@ -51,6 +53,7 @@ export function AuthContextProvider({children}:{children: ReactNode}){
     try{
       setIsLoadingStorageData(true)
       setUser({} as userDTO)
+      tagUserEmailRemove()
       await removeUserStoraged()
       await removeAuthToken()
     }catch(error){
